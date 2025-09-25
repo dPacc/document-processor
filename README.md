@@ -91,7 +91,14 @@ docker compose down
 
 ### Local Development (without Docker)
 
-**Server:**
+**Server (using Poetry - recommended):**
+```bash
+cd server
+poetry install
+poetry run uvicorn src.document_processor.api:app --host 0.0.0.0 --port 8050 --reload
+```
+
+**Server (alternative with pip):**
 ```bash
 cd server
 pip install -r requirements.txt
@@ -117,10 +124,17 @@ REACT_APP_API_URL=http://localhost:8050 npm start
 ```bash
 # Process single image (from server directory)
 cd server
+
+# Using Poetry (recommended)
+poetry run python -m src.document_processor.cli input.jpg -o output_dir/
+# Or using Poetry script
+poetry run process-document input.jpg -o output_dir/
+
+# Using pip installation
 python -m src.document_processor.cli input.jpg -o output_dir/
 
 # Process with verbose output
-python -m src.document_processor.cli input.jpg -o output_dir/ --verbose
+poetry run python -m src.document_processor.cli input.jpg -o output_dir/ --verbose
 ```
 
 ### Bulk Processing (Folder)
@@ -128,10 +142,15 @@ python -m src.document_processor.cli input.jpg -o output_dir/ --verbose
 ```bash
 # Process all images in a folder
 cd server
+
+# Using Poetry (recommended)
+poetry run python -m src.document_processor.cli /path/to/image/folder -o /path/to/output
+
+# Using pip installation
 python -m src.document_processor.cli /path/to/image/folder -o /path/to/output
 
 # Process folder with default output location (creates 'processed' subfolder)
-python -m src.document_processor.cli /path/to/image/folder
+poetry run python -m src.document_processor.cli /path/to/image/folder
 ```
 
 **CLI Options:**

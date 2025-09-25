@@ -73,27 +73,81 @@ processor = FixedDocumentProcessor(debug=True)
 angle, result = processor.process(image_array)
 ```
 
-### FastAPI Web Service (Bonus)
+### FastAPI Web Service
 
 Start the web service:
 ```bash
-poetry run uvicorn document_processor.api:app --reload
+poetry run uvicorn document_processor.api:app --reload --host 0.0.0.0 --port 8000
 ```
 
 The API will be available at `http://localhost:8000` with interactive documentation at `http://localhost:8000/docs`.
 
-#### API Endpoints:
+#### API Endpoints
 
-- `POST /process`: Upload and process a document image
-- `GET /health`: Health check endpoint
+##### 1. Health Check
+- **GET** `/health` - Check API status
+- **GET** `/` - API information and available endpoints
 
-Example usage:
+##### 2. Single Image Processing
+- **POST** `/process` - Upload and process a single document image
+
+**Request**: Multipart form with `file` field (JPG, JPEG, PNG)
+
+**Response**:
+```json
+{
+  "rotation_angle": -0.003159403180082639,
+  "processing_time_ms": 954.0348052978516,
+  "image_base64": "base64_encoded_image_string",
+  "original_size": [height, width],
+  "final_size": [height, width]
+}
+```
+
+**Example**:
 ```bash
 curl -X POST "http://localhost:8000/process" \
   -H "accept: application/json" \
   -H "Content-Type: multipart/form-data" \
   -F "file=@document.jpg"
 ```
+
+##### 3. Batch Processing
+- **POST** `/process-batch` - Upload and process multiple document images (max 20 files)
+
+**Request**: Multipart form with multiple `files` fields
+
+**Response**:
+```json
+{
+  "total_processed": 3,
+  "total_time_ms": 2847.12,
+  "results": [
+    {
+      "rotation_angle": -0.5,
+      "processing_time_ms": 892.1,
+      "image_base64": "base64_string",
+      "original_size": [1200, 800],
+      "final_size": [1180, 820]
+    }
+  ],
+  "failed_files": ["invalid_file.txt: Not an image file"]
+}
+```
+
+**Example**:
+```bash
+curl -X POST "http://localhost:8000/process-batch" \
+  -H "accept: application/json" \
+  -H "Content-Type: multipart/form-data" \
+  -F "files=@doc1.jpg" \
+  -F "files=@doc2.png" \
+  -F "files=@doc3.jpeg"
+```
+
+#### Interactive Documentation
+- **Swagger UI**: `http://localhost:8000/docs` - Interactive API documentation
+- **ReDoc**: `http://localhost:8000/redoc` - Alternative documentation format
 
 ## Technical Approach
 

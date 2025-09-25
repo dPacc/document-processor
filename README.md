@@ -20,7 +20,7 @@ A robust, enterprise-grade document image processing system with beautiful React
 # Clone and start the entire stack
 git clone <repository-url>
 cd document-processor
-docker-compose up --build
+docker compose up --build
 ```
 
 **Access the application:**
@@ -72,38 +72,88 @@ docker-compose up --build
 ### Development Mode
 
 ```bash
-docker-compose up --build
+docker compose up --build
 ```
 
-### Production Mode
+### Background Mode
 
 ```bash
-docker-compose -f docker-compose.prod.yml up --build -d
+docker compose up --build -d
 ```
 
-### Production with Traefik (Load Balancer)
+### Stop Services
 
 ```bash
-docker-compose -f docker-compose.prod.yml --profile proxy up --build -d
+docker compose down
 ```
 
 ## 🛠️ Development Setup
 
-### Server Development
+### Local Development (without Docker)
 
+**Server:**
 ```bash
 cd server
-poetry install
-poetry run uvicorn src.document_processor.api:app --reload --host 0.0.0.0 --port 8050
-python -m uvicorn src.document_processor.api:app --port 8000
+pip install -r requirements.txt
+python -m uvicorn src.document_processor.api:app --host 0.0.0.0 --port 8050 --reload
 ```
 
-### Client Development
+**Or using the local script:**
+```bash
+./run-local.sh
+```
 
+**Client (if running separately):**
 ```bash
 cd client
 npm install
-npm start
+REACT_APP_API_URL=http://localhost:8050 npm start
+```
+
+## 🖥️ Command Line Interface
+
+### Single Image Processing
+
+```bash
+# Process single image (from server directory)
+cd server
+python -m src.document_processor.cli input.jpg -o output_dir/
+
+# Process with verbose output
+python -m src.document_processor.cli input.jpg -o output_dir/ --verbose
+```
+
+### Bulk Processing (Folder)
+
+```bash
+# Process all images in a folder
+cd server
+python -m src.document_processor.cli /path/to/image/folder -o /path/to/output
+
+# Process folder with default output location (creates 'processed' subfolder)
+python -m src.document_processor.cli /path/to/image/folder
+```
+
+**CLI Options:**
+- `-o, --output`: Output directory for processed images
+- `-f, --format`: Output format (`ndarray` or `base64`)
+- `-v, --verbose`: Enable verbose output
+
+**Example Output:**
+```
+Processing 5 images with document processor...
+Output directory: /path/to/output
+[ 1/ 5] image1.jpg                     +2.45°   82ms ✓
+[ 2/ 5] image2.png                     -1.23°   95ms ✓
+[ 3/ 5] image3.jpg                     +0.67°   78ms ✓
+
+======================================================================
+BATCH PROCESSING COMPLETE
+Successful: 5/5
+Failed: 0/5
+Average time: 85ms
+Max time: 95ms
+======================================================================
 ```
 
 ## 📖 API Documentation
@@ -191,10 +241,9 @@ nova-it-document-processor/
 │   │   └── styles/                 # CSS styles
 │   ├── public/
 │   ├── Dockerfile
-│   ├── nginx.conf
 │   └── package.json
-├── docker-compose.yml      # Development setup
-├── docker-compose.prod.yml # Production setup
+├── docker-compose.yml      # Docker setup
+├── run-local.sh           # Local development script
 └── README.md
 ```
 
@@ -234,7 +283,7 @@ ab -n 100 -c 10 http://localhost:8050/health
 ### Health Checks
 
 - **Server**: `/health` endpoint with detailed status
-- **Client**: Nginx health check endpoint
+- **Client**: React development server health check
 - **Docker**: Built-in container health monitoring
 
 ### Logging

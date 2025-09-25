@@ -3,19 +3,19 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Download, 
   Eye, 
-  RotateCcw, 
+  RotateCw, 
   Clock, 
-  FileText, 
   Trash2, 
   ZoomIn,
   ZoomOut,
-  RotateLeft,
-  X
+  X,
+  Loader
 } from 'lucide-react';
 
 const ProcessingResults = ({ results, onClear }) => {
   const [selectedResult, setSelectedResult] = useState(null);
   const [imageZoom, setImageZoom] = useState(1);
+  const [isDownloadingAll, setIsDownloadingAll] = useState(false);
 
   const downloadImage = (result) => {
     const link = document.createElement('a');
@@ -51,17 +51,109 @@ const ProcessingResults = ({ results, onClear }) => {
   const zoomIn = () => setImageZoom(prev => Math.min(prev * 1.2, 3));
   const zoomOut = () => setImageZoom(prev => Math.max(prev / 1.2, 0.5));
 
+  const downloadAll = async () => {
+    if (results.length === 0) return;
+    
+    setIsDownloadingAll(true);
+    
+    try {
+      // Create a zip file with all processed images
+      const JSZip = window.JSZip || require('jszip');
+      const zip = new JSZip();
+      
+      results.forEach((result, index) => {
+        // Convert base64 to blob
+        const byteCharacters = atob(result.image_base64);
+        const byteNumbers = new Array(byteCharacters.length);
+        for (let i = 0; i < byteCharacters.length; i++) {
+          byteNumbers[i] = byteCharacters.charCodeAt(i);
+        }
+        const byteArray = new Uint8Array(byteNumbers);
+        
+        const filename = `processed_${result.fileName}`;
+        zip.file(filename, byteArray);
+      });
+      
+      const content = await zip.generateAsync({ type: 'blob' });
+      
+      // Download the zip file
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(content);
+      link.download = `processed_documents_${new Date().toISOString().split('T')[0]}.zip`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      
+      // Cleanup
+      URL.revokeObjectURL(link.href);
+    } catch (error) {
+      console.error('Error creating zip file:', error);
+      // Fallback: download individually
+      results.forEach(result => downloadImage(result));
+    } finally {
+      setIsDownloadingAll(false);
+    }
+  };
+
+  const getTotalStats = () => {
+    if (results.length === 0) return null;
+    
+    const totalProcessingTime = results.reduce((sum, result) => sum + result.processing_time_ms, 0);
+    const avgProcessingTime = totalProcessingTime / results.length;
+    const avgRotation = results.reduce((sum, result) => sum + Math.abs(result.rotation_angle), 0) / results.length;
+    
+    return {
+      totalFiles: results.length,
+      totalTime: totalProcessingTime,
+      avgTime: avgProcessingTime,
+      avgRotation: avgRotation
+    };
+  };
+
+  const stats = getTotalStats();
+
   return (
     <div className="processing-results">
       <div className="results-header">
-        <h2 className="results-title">
-          <FileText size={24} />
-          Processing Results ({results.length})
-        </h2>
-        <button onClick={onClear} className="btn btn-outline">
-          <Trash2 size={16} />
-          Clear All
-        </button>
+        <div className="results-title-section">
+          <h2 className="results-title">
+            Results ({results.length})
+          </h2>
+          {stats && (
+            <div className="results-stats-summary">
+              <span>Avg: {formatProcessingTime(stats.avgTime)}</span>
+              <span>•</span>
+              <span>Rotation: {stats.avgRotation.toFixed(1)}°</span>
+              <span>•</span>
+              <span>Total: {formatProcessingTime(stats.totalTime)}</span>
+            </div>
+          )}
+        </div>
+        <div className="results-actions">
+          {results.length > 1 && (
+            <button 
+              onClick={downloadAll} 
+              disabled={isDownloadingAll}
+              className="btn btn-primary"
+            >
+              {isDownloadingAll ? (
+                <>
+                  <Loader size={16} className="spinning" />
+                  Creating ZIP...
+                </>
+              ) : (
+                <>
+                  <Download size={16} />
+                  Download All
+                </>
+              )}
+            </button>
+          )}
+          <button onClick={onClear} className="btn btn-outline">
+            <Trash2 size={16} />
+            Clear All
+          </button>
+        </div>
       </div>
 
       <div className="results-grid">
@@ -103,7 +195,7 @@ const ProcessingResults = ({ results, onClear }) => {
               
               <div className="result-stats">
                 <div className="stat">
-                  <RotateCcw size={16} />
+                  <RotateCw size={16} />
                   <span>Rotation: {formatRotationAngle(result.rotation_angle)}</span>
                 </div>
                 

@@ -1,27 +1,50 @@
 import React, { useCallback, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Upload, File, X, Loader, CheckCircle, AlertCircle, Zap } from 'lucide-react';
+import { Upload, File, X, Loader, CheckCircle, AlertCircle, Zap, Download } from 'lucide-react';
 import { processDocument, processBatch } from '../services/api';
 
 const FileUpload = ({ onProcessingStart, onProcessingComplete, onProcessingError, isProcessing }) => {
   const [files, setFiles] = useState([]);
   const [processingFiles, setProcessingFiles] = useState(new Set());
+  const [processingProgress, setProcessingProgress] = useState({});
+  const [rejectedFiles, setRejectedFiles] = useState([]);
 
   const onDrop = useCallback((acceptedFiles, rejectedFiles) => {
     // Handle rejected files
     if (rejectedFiles.length > 0) {
-      rejectedFiles.forEach(rejection => {
-        console.error('File rejected:', rejection.file.name, rejection.errors);
-      });
+      const rejected = rejectedFiles.map(rejection => ({
+        file: rejection.file,
+        errors: rejection.errors.map(e => e.message).join(', ')
+      }));
+      setRejectedFiles(prev => [...prev, ...rejected]);
+      
+      // Clear rejected files after 5 seconds
+      setTimeout(() => {
+        setRejectedFiles([]);
+      }, 5000);
     }
 
-    // Add accepted files
-    const newFiles = acceptedFiles.map(file => ({
+    // Validate file sizes and types
+    const validFiles = acceptedFiles.filter(file => {
+      if (file.size > 10 * 1024 * 1024) { // 10MB limit
+        setRejectedFiles(prev => [...prev, { 
+          file, 
+          errors: 'File size exceeds 10MB limit' 
+        }]);
+        return false;
+      }
+      return true;
+    });
+
+    // Add accepted files with enhanced metadata
+    const newFiles = validFiles.map(file => ({
       id: Math.random().toString(36).substr(2, 9),
       file,
       status: 'pending',
-      preview: URL.createObjectURL(file)
+      preview: URL.createObjectURL(file),
+      uploadedAt: new Date(),
+      originalSize: file.size
     }));
 
     setFiles(prev => [...prev, ...newFiles]);
@@ -33,7 +56,8 @@ const FileUpload = ({ onProcessingStart, onProcessingComplete, onProcessingError
       'image/*': ['.jpeg', '.jpg', '.png']
     },
     multiple: true,
-    maxFiles: 20
+    maxFiles: 20,
+    maxSize: 10 * 1024 * 1024 // 10MB
   });
 
   const removeFile = (fileId) => {
@@ -51,26 +75,51 @@ const FileUpload = ({ onProcessingStart, onProcessingComplete, onProcessingError
 
     onProcessingStart();
     setProcessingFiles(new Set(files.map(f => f.id)));
+    setProcessingProgress({});
 
     try {
       let results;
       
       if (files.length === 1) {
-        // Single file processing
+        // Single file processing with progress
+        setProcessingProgress({ [files[0].id]: 50 });
         const result = await processDocument(files[0].file);
+        setProcessingProgress({ [files[0].id]: 100 });
+        
         results = [{
           ...result,
           fileName: files[0].file.name,
-          fileId: files[0].id
+          fileId: files[0].id,
+          compressionRatio: ((files[0].originalSize - result.final_size.reduce((a, b) => a * b, 4)) / files[0].originalSize * 100).toFixed(1)
         }];
       } else {
-        // Batch processing
+        // Batch processing with individual progress tracking
         const filesList = files.map(f => f.file);
+        
+        // Simulate individual progress tracking
+        files.forEach((file, index) => {
+          setTimeout(() => {
+            setProcessingProgress(prev => ({
+              ...prev,
+              [file.id]: Math.min(30 + (index * 10), 90)
+            }));
+          }, index * 200);
+        });
+        
         const batchResult = await processBatch(filesList);
+        
+        // Complete all progress
+        const completedProgress = {};
+        files.forEach(file => {
+          completedProgress[file.id] = 100;
+        });
+        setProcessingProgress(completedProgress);
+        
         results = batchResult.results.map((result, index) => ({
           ...result,
           fileName: files[index].file.name,
-          fileId: files[index].id
+          fileId: files[index].id,
+          compressionRatio: ((files[index].originalSize - result.final_size.reduce((a, b) => a * b, 4)) / files[index].originalSize * 100).toFixed(1)
         }));
       }
 
@@ -90,6 +139,7 @@ const FileUpload = ({ onProcessingStart, onProcessingComplete, onProcessingError
           }
         });
         setFiles([]);
+        setProcessingProgress({});
       }, 2000);
 
     } catch (error) {
@@ -124,22 +174,11 @@ const FileUpload = ({ onProcessingStart, onProcessingComplete, onProcessingError
       >
         <input {...getInputProps()} />
         <div className="dropzone-content">
-          <motion.div
-            animate={{ 
-              rotate: isProcessing ? 360 : 0,
-              scale: isDragActive ? 1.1 : 1 
-            }}
-            transition={{ 
-              rotate: { duration: 1, repeat: isProcessing ? Infinity : 0, ease: "linear" },
-              scale: { duration: 0.3 }
-            }}
-          >
-            {isProcessing ? (
-              <Loader size={48} className="upload-icon processing" />
-            ) : (
-              <Upload size={48} className="upload-icon" />
-            )}
-          </motion.div>
+          {isProcessing ? (
+            <Loader size={32} className="upload-icon processing" />
+          ) : (
+            <Upload size={32} className="upload-icon" />
+          )}
           
           <h3 className="dropzone-title">
             {isDragActive ? 'Drop files here' : 'Upload Documents'}
@@ -147,16 +186,39 @@ const FileUpload = ({ onProcessingStart, onProcessingComplete, onProcessingError
           
           <p className="dropzone-subtitle">
             {isProcessing 
-              ? 'Processing your documents...'
-              : 'Drag & drop your images here, or click to browse'
+              ? 'Processing documents...'
+              : 'Drag and drop files or click to browse'
             }
           </p>
           
           <p className="dropzone-info">
-            Supports JPG, JPEG, PNG • Max 20 files • AI-powered processing
+            JPG, JPEG, PNG files • Maximum 20 files • 10MB per file
           </p>
         </div>
       </motion.div>
+
+      {/* Rejected Files Alert */}
+      <AnimatePresence>
+        {rejectedFiles.length > 0 && (
+          <motion.div
+            className="rejected-files-alert"
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            transition={{ duration: 0.3 }}
+          >
+            <AlertCircle size={18} className="alert-icon" />
+            <div className="alert-content">
+              <h4>Files Rejected</h4>
+              {rejectedFiles.map((rejection, index) => (
+                <p key={index}>
+                  <strong>{rejection.file.name}</strong>: {rejection.errors}
+                </p>
+              ))}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       <AnimatePresence>
         {files.length > 0 && (
@@ -217,9 +279,34 @@ const FileUpload = ({ onProcessingStart, onProcessingComplete, onProcessingError
                   
                   <div className="file-info">
                     <p className="file-name">{fileObj.file.name}</p>
-                    <p className="file-size">
-                      {(fileObj.file.size / 1024 / 1024).toFixed(2)} MB
-                    </p>
+                    <div className="file-details">
+                      <p className="file-size">
+                        {(fileObj.file.size / 1024 / 1024).toFixed(2)} MB
+                      </p>
+                      <p className="file-type">
+                        {fileObj.file.type.split('/')[1].toUpperCase()}
+                      </p>
+                      {fileObj.uploadedAt && (
+                        <p className="file-uploaded">
+                          Added {new Date(fileObj.uploadedAt).toLocaleTimeString()}
+                        </p>
+                      )}
+                    </div>
+                    
+                    {/* Progress Bar */}
+                    {processingProgress[fileObj.id] && (
+                      <div className="progress-container">
+                        <div className="progress-bar">
+                          <div 
+                            className="progress-fill"
+                            style={{ width: `${processingProgress[fileObj.id]}%` }}
+                          />
+                        </div>
+                        <span className="progress-text">
+                          {processingProgress[fileObj.id]}%
+                        </span>
+                      </div>
+                    )}
                   </div>
 
                   <div className="file-status">

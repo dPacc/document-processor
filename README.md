@@ -11,11 +11,13 @@ A robust, enterprise-grade document image processing system with beautiful React
 ## 🚀 Quick Start with Docker
 
 ### Prerequisites
+
 - Docker and Docker Compose installed
 - 4GB RAM minimum
 - 2GB free disk space
 
 ### One-Command Setup
+
 ```bash
 # Clone and start the entire stack
 git clone <repository-url>
@@ -24,9 +26,10 @@ docker-compose up --build
 ```
 
 **Access the application:**
-- 🌐 **Web Client**: http://localhost:3050
-- 🔧 **API Server**: http://localhost:8050
-- 📚 **API Docs**: http://localhost:8050/docs
+
+- 🌐 **Web Client**: <http://localhost:3050>
+- 🔧 **API Server**: <http://localhost:8050>
+- 📚 **API Docs**: <http://localhost:8050/docs>
 
 ## 🏗️ Architecture
 
@@ -45,12 +48,14 @@ docker-compose up --build
 ## ✨ Features
 
 ### 🎯 **Core Processing**
+
 - **Document Orientation Correction**: 0-360° rotation detection and correction
 - **Boundary Detection**: Intelligent document cropping with 5 detection algorithms
 - **Multi-format Support**: JPG, JPEG, PNG with batch processing
 - **Sub-100ms Processing**: Optimized for enterprise performance
 
 ### 🎨 **Beautiful Web Interface**
+
 - **Modern React UI**: Professional design with Framer Motion animations
 - **Drag & Drop Upload**: Intuitive file handling with visual feedback
 - **Real-time Processing**: Live progress indicators and results
@@ -58,6 +63,7 @@ docker-compose up --build
 - **Professional Branding**: NOVA IT subsidiary of AKW Consultants
 
 ### 🔧 **Enterprise Features**
+
 - **Docker Ready**: Complete containerization with production configs
 - **Health Monitoring**: Built-in health checks and monitoring
 - **Batch Processing**: Handle up to 20 files simultaneously
@@ -67,16 +73,19 @@ docker-compose up --build
 ## 🐳 Docker Deployment Options
 
 ### Development Mode
+
 ```bash
 docker-compose up --build
 ```
 
 ### Production Mode
+
 ```bash
 docker-compose -f docker-compose.prod.yml up --build -d
 ```
 
 ### Production with Traefik (Load Balancer)
+
 ```bash
 docker-compose -f docker-compose.prod.yml --profile proxy up --build -d
 ```
@@ -84,13 +93,16 @@ docker-compose -f docker-compose.prod.yml --profile proxy up --build -d
 ## 🛠️ Development Setup
 
 ### Server Development
+
 ```bash
 cd server
 poetry install
 poetry run uvicorn src.document_processor.api:app --reload --host 0.0.0.0 --port 8050
+python -m uvicorn src.document_processor.api:app --port 8000
 ```
 
 ### Client Development
+
 ```bash
 cd client
 npm install
@@ -100,11 +112,13 @@ npm start
 ## 📖 API Documentation
 
 ### Health Check
+
 ```bash
 curl http://localhost:8050/health
 ```
 
 ### Single Document Processing
+
 ```bash
 curl -X POST "http://localhost:8050/process" \
   -H "Content-Type: multipart/form-data" \
@@ -112,6 +126,7 @@ curl -X POST "http://localhost:8050/process" \
 ```
 
 ### Batch Processing
+
 ```bash
 curl -X POST "http://localhost:8050/process-batch" \
   -H "Content-Type: multipart/form-data" \
@@ -121,6 +136,7 @@ curl -X POST "http://localhost:8050/process-batch" \
 ```
 
 **Response Format:**
+
 ```json
 {
   "rotation_angle": -0.5,
@@ -133,9 +149,10 @@ curl -X POST "http://localhost:8050/process-batch" \
 
 ## 🏢 Company Information
 
-**NOVA IT** is a subsidiary of **AKW Consultants**, a leading group of specialist firms headquartered in Dubai, UAE, with operations in London, UK. 
+**NOVA IT** is a subsidiary of **AKW Consultants**, a leading group of specialist firms headquartered in Dubai, UAE, with operations in London, UK.
 
 ### About AKW Consultants
+
 - **Established**: 2018
 - **Team**: 70+ experts serving 1,000+ clients worldwide
 - **Services**: Business Advisory, Tax & AML Compliance, Audit, Software Development, Cybersecurity & IT
@@ -145,17 +162,20 @@ curl -X POST "http://localhost:8050/process-batch" \
 ## 🎯 Technical Specifications
 
 ### Processing Algorithms
+
 - **Crop-First Strategy**: Isolates documents before rotation detection
 - **Multi-method Detection**: 5 boundary detection algorithms
 - **Weighted Angle Averaging**: 3 rotation detection methods with outlier removal
 - **High-quality Interpolation**: Cubic interpolation for rotation
 
 ### Performance Benchmarks
+
 - **Simple Documents**: 20-50ms
 - **Complex Documents**: 50-100ms  
 - **Large Images (>2MB)**: 80-150ms
 
 ### Libraries Used
+
 - **OpenCV**: Computer vision operations
 - **NumPy**: Array processing and mathematical computations
 - **FastAPI**: Modern Python web framework
@@ -196,6 +216,7 @@ nova-it-document-processor/
 ## 🧪 Testing
 
 ### API Testing
+
 ```bash
 # Test health endpoint
 curl http://localhost:8050/health
@@ -206,6 +227,7 @@ curl -X POST http://localhost:8050/process \
 ```
 
 ### Load Testing
+
 ```bash
 # Install Apache Bench
 sudo apt-get install apache2-utils
@@ -225,11 +247,13 @@ ab -n 100 -c 10 http://localhost:8050/health
 ## 📈 Monitoring & Logging
 
 ### Health Checks
+
 - **Server**: `/health` endpoint with detailed status
 - **Client**: Nginx health check endpoint
 - **Docker**: Built-in container health monitoring
 
 ### Logging
+
 - **Structured Logging**: JSON format for production
 - **Request Tracing**: API request/response logging
 - **Error Tracking**: Comprehensive error logging with context
@@ -237,6 +261,7 @@ ab -n 100 -c 10 http://localhost:8050/health
 ## 🚀 Deployment
 
 ### Environment Variables
+
 ```bash
 # Client
 REACT_APP_API_URL=http://localhost:8050
@@ -247,6 +272,7 @@ PYTHONDONTWRITEBYTECODE=1
 ```
 
 ### Production Considerations
+
 - Use `docker-compose.prod.yml` for production
 - Configure proper SSL certificates
 - Set up reverse proxy with Traefik
@@ -256,7 +282,8 @@ PYTHONDONTWRITEBYTECODE=1
 ## 📞 Support & Contact
 
 **NOVA IT Support**
-- 📧 Email: info@akwconsultants.com
+
+- 📧 Email: <info@akwconsultants.com>
 - 🌍 Locations: Dubai, UAE | London, UK
 - 🔗 Website: [AKW Consultants](https://akwconsultants.com)
 

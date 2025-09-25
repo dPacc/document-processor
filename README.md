@@ -40,17 +40,20 @@ poetry install
 
 ### Command Line Interface
 
-#### Process a single image:
+#### Process a single image
+
 ```bash
 poetry run process-document input.jpg -o output.jpg -v
 ```
 
-#### Process a directory of images:
+#### Process a directory of images
+
 ```bash
 poetry run process-document ./images/ -o ./processed/ -v
 ```
 
-#### Options:
+#### Options
+
 - `-o, --output`: Output file or directory
 - `-f, --format`: Output format (`ndarray` or `base64`, default: `ndarray`)
 - `-v, --verbose`: Enable verbose output with processing details
@@ -76,6 +79,7 @@ angle, result = processor.process(image_array)
 ### FastAPI Web Service
 
 Start the web service:
+
 ```bash
 poetry run uvicorn document_processor.api:app --reload --host 0.0.0.0 --port 8000
 ```
@@ -85,15 +89,18 @@ The API will be available at `http://localhost:8000` with interactive documentat
 #### API Endpoints
 
 ##### 1. Health Check
+
 - **GET** `/health` - Check API status
 - **GET** `/` - API information and available endpoints
 
 ##### 2. Single Image Processing
+
 - **POST** `/process` - Upload and process a single document image
 
 **Request**: Multipart form with `file` field (JPG, JPEG, PNG)
 
 **Response**:
+
 ```json
 {
   "rotation_angle": -0.003159403180082639,
@@ -105,6 +112,7 @@ The API will be available at `http://localhost:8000` with interactive documentat
 ```
 
 **Example**:
+
 ```bash
 curl -X POST "http://localhost:8000/process" \
   -H "accept: application/json" \
@@ -113,11 +121,13 @@ curl -X POST "http://localhost:8000/process" \
 ```
 
 ##### 3. Batch Processing
+
 - **POST** `/process-batch` - Upload and process multiple document images (max 20 files)
 
 **Request**: Multipart form with multiple `files` fields
 
 **Response**:
+
 ```json
 {
   "total_processed": 3,
@@ -136,6 +146,7 @@ curl -X POST "http://localhost:8000/process" \
 ```
 
 **Example**:
+
 ```bash
 curl -X POST "http://localhost:8000/process-batch" \
   -H "accept: application/json" \
@@ -146,15 +157,18 @@ curl -X POST "http://localhost:8000/process-batch" \
 ```
 
 #### Interactive Documentation
+
 - **Swagger UI**: `http://localhost:8000/docs` - Interactive API documentation
 - **ReDoc**: `http://localhost:8000/redoc` - Alternative documentation format
 
 ## Technical Approach
 
 ### 1. Quality Assessment
+
 The system first performs a quality check using blur detection and brightness analysis to determine if the image is processable.
 
 ### 2. Document Detection (Crop-First Strategy)
+
 The system uses a **crop-first approach** which is critical for accuracy:
 
 1. **Enhanced Preprocessing**: Bilateral filtering and CLAHE contrast enhancement
@@ -166,6 +180,7 @@ The system uses a **crop-first approach** which is critical for accuracy:
    - Fallback border cropping
 
 ### 3. Rotation Detection
+
 Once the document is isolated, rotation is detected using:
 
 1. **Hough Line Transform**: Detects document edges and text lines
@@ -173,6 +188,7 @@ Once the document is isolated, rotation is detected using:
 3. **Projection Profile**: Tests multiple angles to find optimal text alignment
 
 ### 4. Correction and Enhancement
+
 - **Counter-rotation**: Applies opposite rotation to fix detected skew
 - **High-quality interpolation**: Uses cubic interpolation for rotation
 - **Smart resizing**: Prevents cropping during rotation
@@ -189,15 +205,19 @@ Once the document is isolated, rotation is detected using:
 ## Algorithmic Rationale
 
 ### Why Crop-First?
+
 Processing the full image for rotation detection can be inaccurate due to background noise. By first isolating the document, rotation detection algorithms can focus on actual document features.
 
 ### Multiple Detection Methods
+
 Real-world documents vary significantly in lighting, color, and background. Using multiple detection methods ensures robustness across different scenarios.
 
 ### Weighted Angle Averaging
+
 Different rotation detection methods have varying reliability. The system uses weighted averaging with outlier removal to get the most accurate final angle.
 
 ### Performance Optimizations
+
 - Efficient morphological operations
 - Optimized contour analysis
 - Smart image resizing
@@ -206,17 +226,20 @@ Different rotation detection methods have varying reliability. The system uses w
 ## Development
 
 ### Running Tests
+
 ```bash
 poetry run pytest
 ```
 
 ### Code Formatting
+
 ```bash
 poetry run black src/
 poetry run flake8 src/
 ```
 
 ### Type Checking
+
 ```bash
 poetry run mypy src/
 ```
@@ -259,7 +282,3 @@ The system is optimized to process most document images in under 100ms on modern
 - **Simple documents**: 20-50ms
 - **Complex documents**: 50-100ms
 - **Large images (>2MB)**: 80-150ms
-
-## License
-
-This project is developed as part of a technical assessment.

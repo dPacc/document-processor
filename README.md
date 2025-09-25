@@ -1,7 +1,5 @@
 # NOVA Document Processor
 
-**A subsidiary of AKW Consultants**
-
 A robust, enterprise-grade document image processing system with beautiful React client and FastAPI backend. Features AI-powered document orientation correction and boundary detection with professional-grade accuracy and performance.
 
 ![NOVA Banner](https://img.shields.io/badge/NOVA%20IT-Document%20Processing-blue?style=for-the-badge)
@@ -145,18 +143,6 @@ curl -X POST "http://localhost:8050/process-batch" \
   "final_size": [1180, 820]
 }
 ```
-
-## 🏢 Company Information
-
-**NOVA IT** is a subsidiary of **AKW Consultants**, a leading group of specialist firms headquartered in Dubai, UAE, with operations in London, UK.
-
-### About AKW Consultants
-
-- **Established**: 2018
-- **Team**: 70+ experts serving 1,000+ clients worldwide
-- **Services**: Business Advisory, Tax & AML Compliance, Audit, Software Development, Cybersecurity & IT
-- **Certifications**: ISO 9001:2025 certified
-- **Awards**: "Best Compliance Team" (2021), "KYC Guru" (2020)
 
 ## 🎯 Technical Specifications
 

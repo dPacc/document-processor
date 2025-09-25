@@ -1,5 +1,5 @@
-import React from 'react';
-import { FileText } from 'lucide-react';
+import React from "react";
+import { FileText } from "lucide-react";
 
 const Header = () => {
   return (
@@ -8,7 +8,7 @@ const Header = () => {
         <div className="logo">
           <FileText size={24} className="logo-icon" />
           <span className="logo-text">
-            Document Processor<sup className="logo-superscript">NOVA IT</sup>
+            Document Processor<sup className="logo-superscript">NOVA</sup>
           </span>
         </div>
       </div>

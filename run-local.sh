@@ -1,8 +1,8 @@
 #!/bin/bash
 
-# Local development script to run NOVA IT Document Processor
+# Local development script to run NOVA Document Processor
 
-echo "🚀 Starting NOVA IT Document Processor (Local Development)"
+echo "🚀 Starting NOVA Document Processor (Local Development)"
 echo "============================================================"
 
 # Check if ports are available
@@ -46,7 +46,7 @@ CLIENT_PID=$!
 cd ..
 
 echo ""
-echo "🎉 NOVA IT Document Processor is running!"
+echo "🎉 NOVA Document Processor is running!"
 echo "================================="
 echo "🌐 Web Client: http://localhost:3050"
 echo "🔧 API Server: http://localhost:8050"

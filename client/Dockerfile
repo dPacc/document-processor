@@ -26,7 +26,7 @@ COPY nginx.conf /etc/nginx/nginx.conf
 COPY --from=builder /app/build /usr/share/nginx/html
 
 # Add labels
-LABEL maintainer="NOVA IT - AKW Consultants"
+LABEL maintainer="NOVA"
 LABEL description="React client for Document Processing API"
 
 # Expose port

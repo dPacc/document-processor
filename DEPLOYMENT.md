@@ -1,4 +1,4 @@
-# NOVA IT Document Processor - Deployment Guide
+# NOVA Document Processor - Deployment Guide
 
 ## 🚀 Quick Start Options
 
@@ -11,13 +11,15 @@
 ```
 
 **Access points:**
-- 🌐 **Web Client**: http://localhost:3050
-- 🔧 **API Server**: http://localhost:8050
-- 📚 **API Docs**: http://localhost:8050/docs
+
+- 🌐 **Web Client**: <http://localhost:3050>
+- 🔧 **API Server**: <http://localhost:8050>
+- 📚 **API Docs**: <http://localhost:8050/docs>
 
 ### Option 2: Manual Setup
 
 #### Server Setup
+
 ```bash
 cd server
 pip install -r requirements.txt
@@ -25,6 +27,7 @@ uvicorn src.document_processor.api:app --host 0.0.0.0 --port 8050 --reload
 ```
 
 #### Client Setup (New Terminal)
+
 ```bash
 cd client
 npm install
@@ -45,9 +48,11 @@ docker-compose up --build
 ### Common Docker Build Problems
 
 #### 1. Repository Access Issues (403 Forbidden)
+
 **Problem**: `403  Forbidden [IP: 199.232.46.132 80]`
 
 **Solutions**:
+
 ```bash
 # Try different Dockerfile variants
 docker-compose -f docker-compose.yml up --build  # Uses Dockerfile.simple
@@ -56,9 +61,11 @@ docker build -f server/Dockerfile.offline server/  # Offline build
 ```
 
 #### 2. Network/Firewall Restrictions
+
 **Problem**: Cannot reach Debian/Ubuntu repositories
 
 **Solution**: Use the offline Dockerfile:
+
 ```bash
 # Update docker-compose.yml to use offline Dockerfile
 services:
@@ -69,9 +76,11 @@ services:
 ```
 
 #### 3. Corporate Network Issues
+
 **Problem**: Corporate firewall blocking Docker Hub or repositories
 
 **Solutions**:
+
 - Use local development setup (`./run-local.sh`)
 - Configure Docker proxy settings
 - Use internal Docker registry if available
@@ -80,7 +89,8 @@ services:
 
 ### 1. Traditional Server Deployment
 
-#### On Ubuntu/Debian Server:
+#### On Ubuntu/Debian Server
+
 ```bash
 # Install dependencies
 sudo apt update
@@ -123,7 +133,8 @@ docker run -d -p 3050:80 --name nova-client nova-it-client:latest
 
 ### 3. Cloud Deployment
 
-#### AWS ECS/Fargate:
+#### AWS ECS/Fargate
+
 ```bash
 # Build and push to ECR
 aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin <account>.dkr.ecr.us-east-1.amazonaws.com
@@ -132,7 +143,8 @@ docker tag nova-it-server:latest <account>.dkr.ecr.us-east-1.amazonaws.com/nova-
 docker push <account>.dkr.ecr.us-east-1.amazonaws.com/nova-it-server:latest
 ```
 
-#### Google Cloud Run:
+#### Google Cloud Run
+
 ```bash
 # Deploy to Cloud Run
 gcloud run deploy nova-it-server \
@@ -145,6 +157,7 @@ gcloud run deploy nova-it-server \
 ## 🧪 Testing Your Deployment
 
 ### Health Checks
+
 ```bash
 # Test server health
 curl http://localhost:8050/health
@@ -158,6 +171,7 @@ curl -X POST "http://localhost:8050/process" \
 ```
 
 ### Load Testing
+
 ```bash
 # Install Apache Bench (if available)
 sudo apt-get install apache2-utils
@@ -172,6 +186,7 @@ ab -n 10 -c 2 -p dataset/Canada.jpg -T image/jpeg http://localhost:8050/process
 ## 🛠️ Troubleshooting
 
 ### Server Won't Start
+
 ```bash
 # Check Python version
 python --version  # Should be 3.11+
@@ -184,6 +199,7 @@ lsof -i :8050
 ```
 
 ### Client Won't Start
+
 ```bash
 # Check Node version
 node --version  # Should be 14+
@@ -198,6 +214,7 @@ lsof -i :3050
 ```
 
 ### Performance Issues
+
 ```bash
 # Monitor resource usage
 htop
@@ -211,6 +228,7 @@ journalctl -u nova-it-server  # If using systemd
 ## 🔒 Security Considerations
 
 ### Production Security
+
 - Use HTTPS/TLS certificates
 - Configure proper firewall rules
 - Set up authentication if required
@@ -218,6 +236,7 @@ journalctl -u nova-it-server  # If using systemd
 - Monitor logs for suspicious activity
 
 ### Network Security
+
 ```bash
 # Recommended firewall rules
 sudo ufw allow 80    # HTTP
@@ -229,6 +248,7 @@ sudo ufw deny 3050   # Block direct client access
 ## 📈 Monitoring & Logging
 
 ### Application Monitoring
+
 ```bash
 # Setup log rotation
 sudo logrotate -d /etc/logrotate.d/nova-it
@@ -239,21 +259,8 @@ sudo systemctl status nova-it-client
 ```
 
 ### Performance Metrics
+
 - Response times: <100ms for document processing
 - Memory usage: <1GB per container
 - CPU usage: <50% under normal load
 - Disk usage: Monitor processed images storage
-
-## 🆘 Support
-
-If you encounter issues:
-
-1. **Check logs** first
-2. **Verify network connectivity**
-3. **Test with local setup** to isolate Docker issues
-4. **Contact support**: info@akwconsultants.com
-
----
-
-**NOVA IT - A subsidiary of AKW Consultants**  
-*Making document processing simple and reliable*

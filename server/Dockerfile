@@ -1,5 +1,5 @@
-# Use Python 3.12 slim image
-FROM python:3.12-slim
+# Use Python 3.12 slim with Debian bookworm for better package compatibility
+FROM python:3.12-slim-bookworm
 
 # Set environment variables
 ENV PYTHONDONTWRITEBYTECODE=1
@@ -11,21 +11,19 @@ ENV POETRY_CACHE_DIR=/tmp/poetry_cache
 # Set work directory
 WORKDIR /app
 
-# Install system dependencies with retry and better error handling
-RUN apt-get update --fix-missing || apt-get update \
-    && apt-get install -y --no-install-recommends \
-    libgl1-mesa-glx \
+# Install system dependencies
+RUN apt-get update && apt-get install -y --no-install-recommends \
     libglib2.0-0 \
     libsm6 \
     libxext6 \
-    libxrender-dev \
+    libxrender1 \
     libgomp1 \
-    libgtk-3-0 \
+    libgl1-mesa-glx \
     curl \
     wget \
     ca-certificates \
     && apt-get clean \
-    && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+    && rm -rf /var/lib/apt/lists/*
 
 # Install Poetry
 RUN pip install poetry

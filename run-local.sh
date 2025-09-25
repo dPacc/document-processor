@@ -25,7 +25,7 @@ cd ..
 
 # Wait for server to be ready
 echo "⏳ Waiting for server to be ready..."
-sleep 5
+sleep 10
 
 # Check if server is running
 if curl -s http://localhost:8050/health > /dev/null; then

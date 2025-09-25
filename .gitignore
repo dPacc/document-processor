@@ -92,3 +92,5 @@ poetry.lock
 # Temporary files
 tmp/
 temp/
+
+assess.pdf

@@ -30,14 +30,14 @@ services:
       dockerfile: Dockerfile
     container_name: nova-it-client
     ports:
-      - "3050:80"
+      - "3050:3000"
     depends_on:
       server:
         condition: service_healthy
     environment:
       - REACT_APP_API_URL=http://localhost:8050
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost/health"]
+      test: ["CMD", "curl", "-f", "http://localhost:3000"]
       interval: 30s
       timeout: 10s
       retries: 3

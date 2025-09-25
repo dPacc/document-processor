@@ -1,10 +1,10 @@
-# NOVA IT Document Processor
+# NOVA Document Processor
 
 **A subsidiary of AKW Consultants**
 
 A robust, enterprise-grade document image processing system with beautiful React client and FastAPI backend. Features AI-powered document orientation correction and boundary detection with professional-grade accuracy and performance.
 
-![NOVA IT Banner](https://img.shields.io/badge/NOVA%20IT-Document%20Processing-blue?style=for-the-badge)
+![NOVA Banner](https://img.shields.io/badge/NOVA%20IT-Document%20Processing-blue?style=for-the-badge)
 ![Build Status](https://img.shields.io/badge/build-passing-success?style=for-the-badge)
 ![Docker](https://img.shields.io/badge/docker-ready-blue?style=for-the-badge&logo=docker)
 
@@ -60,7 +60,6 @@ docker-compose up --build
 - **Drag & Drop Upload**: Intuitive file handling with visual feedback
 - **Real-time Processing**: Live progress indicators and results
 - **Responsive Design**: Works on desktop, tablet, and mobile
-- **Professional Branding**: NOVA IT subsidiary of AKW Consultants
 
 ### 🔧 **Enterprise Features**
 
@@ -278,19 +277,3 @@ PYTHONDONTWRITEBYTECODE=1
 - Set up reverse proxy with Traefik
 - Configure log rotation and monitoring
 - Set resource limits based on expected load
-
-## 📞 Support & Contact
-
-**NOVA IT Support**
-
-- 📧 Email: <info@akwconsultants.com>
-- 🌍 Locations: Dubai, UAE | London, UK
-- 🔗 Website: [AKW Consultants](https://akwconsultants.com)
-
-## 📄 License
-
-© 2024 NOVA IT, a subsidiary of AKW Consultants. All rights reserved.
-
----
-
-**Made with ❤️ for better document processing**

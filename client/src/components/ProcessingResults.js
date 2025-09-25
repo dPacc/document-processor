@@ -195,13 +195,13 @@ const ProcessingResults = ({ results, onClear }) => {
               
               <div className="result-stats">
                 <div className="stat">
-                  <RotateCw size={16} />
-                  <span>Rotation: {formatRotationAngle(result.rotation_angle)}</span>
+                  <RotateCw size={14} />
+                  <span className="stat-value">{formatRotationAngle(result.rotation_angle)}</span>
                 </div>
                 
                 <div className="stat">
-                  <Clock size={16} />
-                  <span>{formatProcessingTime(result.processing_time_ms)}</span>
+                  <Clock size={14} />
+                  <span className="stat-value">{formatProcessingTime(result.processing_time_ms)}</span>
                 </div>
               </div>
 

@@ -7,7 +7,9 @@ const Header = () => {
       <div className="header-container">
         <div className="logo">
           <FileText size={24} className="logo-icon" />
-          <span className="logo-text">Document Processor</span>
+          <span className="logo-text">
+            Document Processor<sup className="logo-superscript">NOVA IT</sup>
+          </span>
         </div>
       </div>
     </header>

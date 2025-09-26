@@ -2,10 +2,6 @@
 
 A robust, enterprise-grade document image processing system with beautiful React client and FastAPI backend. Features AI-powered document orientation correction and boundary detection with professional-grade accuracy and performance.
 
-![NOVA Banner](https://img.shields.io/badge/NOVA%20IT-Document%20Processing-blue?style=for-the-badge)
-![Build Status](https://img.shields.io/badge/build-passing-success?style=for-the-badge)
-![Docker](https://img.shields.io/badge/docker-ready-blue?style=for-the-badge&logo=docker)
-
 ## 🚀 Quick Start with Docker
 
 ### Prerequisites
@@ -18,7 +14,7 @@ A robust, enterprise-grade document image processing system with beautiful React
 
 ```bash
 # Clone and start the entire stack
-git clone <repository-url>
+git clone https://github.com/dPacc/document-processor.git
 cd document-processor
 docker compose up --build
 ```
@@ -50,7 +46,7 @@ docker compose up --build
 - **Document Orientation Correction**: 0-360° rotation detection and correction
 - **Boundary Detection**: Intelligent document cropping with 5 detection algorithms
 - **Multi-format Support**: JPG, JPEG, PNG with batch processing
-- **Sub-100ms Processing**: Optimized for enterprise performance
+- **Sub-100ms Processing**: Optimized for enterprise performance (*Depends on image size and complexity*)
 
 ### 🎨 **Beautiful Web Interface**
 
@@ -92,13 +88,33 @@ docker compose down
 ### Local Development (without Docker)
 
 **Server (using Poetry - recommended):**
+
+**Note**: Poetry requires Python 3.12+. If you don't have Python 3.12, install it first or use the pip method below.
+
+**Installing Python 3.12 on Ubuntu:**
+
+```bash
+# Add deadsnakes PPA
+sudo apt update
+sudo apt install software-properties-common
+sudo add-apt-repository ppa:deadsnakes/ppa
+sudo apt update
+
+# Install Python 3.12
+sudo apt install python3.12 python3.12-venv python3.12-dev
+```
+
+**Then run Poetry setup:**
+
 ```bash
 cd server
+poetry env use python3.12  # Configure Poetry to use Python 3.12
 poetry install
 poetry run uvicorn src.document_processor.api:app --host 0.0.0.0 --port 8050 --reload
 ```
 
 **Server (alternative with pip):**
+
 ```bash
 cd server
 pip install -r requirements.txt
@@ -106,11 +122,13 @@ python -m uvicorn src.document_processor.api:app --host 0.0.0.0 --port 8050 --re
 ```
 
 **Or using the local script:**
+
 ```bash
 ./run-local.sh
 ```
 
 **Client (if running separately):**
+
 ```bash
 cd client
 npm install
@@ -154,11 +172,13 @@ poetry run python -m src.document_processor.cli /path/to/image/folder
 ```
 
 **CLI Options:**
+
 - `-o, --output`: Output directory for processed images
 - `-f, --format`: Output format (`ndarray` or `base64`)
 - `-v, --verbose`: Enable verbose output
 
 **Example Output:**
+
 ```
 Processing 5 images with document processor...
 Output directory: /path/to/output
@@ -323,11 +343,3 @@ REACT_APP_API_URL=http://localhost:8050
 PYTHONUNBUFFERED=1
 PYTHONDONTWRITEBYTECODE=1
 ```
-
-### Production Considerations
-
-- Use `docker-compose.prod.yml` for production
-- Configure proper SSL certificates
-- Set up reverse proxy with Traefik
-- Configure log rotation and monitoring
-- Set resource limits based on expected load

@@ -82,6 +82,9 @@ processed_output/
 *.bmp
 !dataset/*.jpg
 !dataset/*.png
+!docs/*.jpg
+!docs/*.png
+!docs/*.jpeg
 
 # Poetry
 poetry.lock

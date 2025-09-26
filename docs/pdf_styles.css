@@ -1,0 +1,76 @@
+/* Custom PDF styling for better page breaks */
+@media print {
+    h1 {
+        page-break-before: always;
+        page-break-after: avoid;
+    }
+    
+    h2 {
+        page-break-after: avoid;
+        page-break-before: avoid;
+    }
+    
+    h3, h4, h5, h6 {
+        page-break-after: avoid;
+    }
+    
+    pre, blockquote {
+        page-break-inside: avoid;
+    }
+    
+    table {
+        page-break-inside: avoid;
+    }
+    
+    img {
+        page-break-inside: avoid;
+        page-break-after: avoid;
+    }
+    
+    .page-break {
+        page-break-before: always;
+    }
+}
+
+/* Image sizing for PDF */
+img {
+    max-width: 400px !important;
+    height: auto !important;
+    display: block;
+    margin: 10px auto;
+}
+
+/* Table styling */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 15px 0;
+}
+
+table th, table td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+}
+
+table th {
+    background-color: #f5f5f5;
+    font-weight: bold;
+}
+
+/* Code block styling */
+pre {
+    background-color: #f8f8f8;
+    border: 1px solid #e1e4e8;
+    border-radius: 6px;
+    padding: 16px;
+    overflow-x: auto;
+    margin: 15px 0;
+}
+
+code {
+    background-color: #f6f8fa;
+    padding: 2px 4px;
+    border-radius: 3px;
+    font-family: 'Courier New', Courier, monospace;
+}

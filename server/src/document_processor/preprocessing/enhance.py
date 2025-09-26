@@ -1,5 +1,5 @@
 """
-Image enhancement and preprocessing utilities.
+Simplified image preprocessing for new advanced logic.
 """
 
 import cv2
@@ -7,50 +7,40 @@ import numpy as np
 
 
 def enhanced_preprocess(image: np.ndarray) -> np.ndarray:
-    """Enhanced preprocessing for document detection"""
+    """Simplified preprocessing for document detection"""
     if len(image.shape) == 3:
         gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
     else:
         gray = image.copy()
     
-    # Noise reduction while preserving edges
-    gray = cv2.bilateralFilter(gray, 9, 75, 75)
+    # Apply bilateral filter to reduce noise while preserving edges
+    # This matches the new advanced_deskew approach
+    filtered = cv2.bilateralFilter(gray, 11, 17, 17)
     
-    # Enhance contrast for better detection
-    clahe = cv2.createCLAHE(clipLimit=2.5, tileGridSize=(8, 8))
-    gray = clahe.apply(gray)
-    
-    return gray
+    return filtered
 
 
-def enhance_final_result(document: np.ndarray) -> np.ndarray:
-    """Final enhancement of the processed document"""
-    if document is None or document.size == 0:
-        return document
+# Simplified versions - remove complex quality checks since new approach is more robust
+def is_unusable_quality(image: np.ndarray, debug: bool = False) -> bool:
+    """Simplified quality check - new approach is more robust"""
+    # Basic size check only
+    if image is None or image.size == 0:
+        return True
     
-    # Add clean white border
-    padding = 30
-    result = cv2.copyMakeBorder(document, padding, padding, padding, padding,
-                              cv2.BORDER_CONSTANT, value=(255, 255, 255))
+    h, w = image.shape[:2]
+    if h < 100 or w < 100:  # Very small images
+        if debug:
+            print(f"Image too small: {w}x{h}")
+        return True
     
-    # Ensure reasonable minimum size
-    h, w = result.shape[:2]
-    min_size = 600
-    if h < min_size or w < min_size:
-        scale_factor = max(min_size/h, min_size/w, 1.0)
-        if scale_factor > 1.0:
-            new_h, new_w = int(h * scale_factor), int(w * scale_factor)
-            result = cv2.resize(result, (new_w, new_h), interpolation=cv2.INTER_CUBIC)
-    
-    # Optional: subtle noise reduction while preserving details
-    if len(result.shape) == 3:
-        result = cv2.bilateralFilter(result, 3, 20, 20)
-    
-    return result
+    return False
 
 
 def minimal_process(image: np.ndarray) -> np.ndarray:
-    """Minimal processing for fallback cases"""
-    padding = 40
-    return cv2.copyMakeBorder(image, padding, padding, padding, padding,
-                            cv2.BORDER_CONSTANT, value=(255, 255, 255))
+    """Return original image for minimal processing"""
+    return image
+
+
+def enhance_final_result(image: np.ndarray) -> np.ndarray:
+    """Return processed image as-is since jdeskew handles enhancement"""
+    return image

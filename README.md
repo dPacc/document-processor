@@ -43,10 +43,12 @@ docker compose up --build
 
 ### 🎯 **Core Processing**
 
-- **Document Orientation Correction**: 0-360° rotation detection and correction
-- **Boundary Detection**: Intelligent document cropping with 5 detection algorithms
+- **Advanced Document Detection**: Sophisticated OpenCV pipeline with multiple edge detection methods
+- **Precise Skew Correction**: Uses jdeskew library for sub-degree accuracy angle detection
+- **Perspective Correction**: Four-point transformation for document boundary correction
+- **Intelligent Fallback**: Full image deskewing when document boundaries aren't detected
 - **Multi-format Support**: JPG, JPEG, PNG with batch processing
-- **Sub-100ms Processing**: Optimized for enterprise performance (*Depends on image size and complexity*)
+- **Background-Aware Processing**: Optimized for various background types and textures
 
 ### 🎨 **Beautiful Web Interface**
 
@@ -109,7 +111,7 @@ sudo apt install python3.12 python3.12-venv python3.12-dev
 ```bash
 cd server
 poetry env use python3.12  # Configure Poetry to use Python 3.12
-poetry install
+poetry install  # Installs OpenCV, jdeskew, FastAPI, and all dependencies
 poetry run uvicorn src.document_processor.api:app --host 0.0.0.0 --port 8050 --reload
 ```
 
@@ -117,7 +119,7 @@ poetry run uvicorn src.document_processor.api:app --host 0.0.0.0 --port 8050 --r
 
 ```bash
 cd server
-pip install -r requirements.txt
+pip install -r requirements.txt  # Includes jdeskew, OpenCV, FastAPI, etc.
 python -m uvicorn src.document_processor.api:app --host 0.0.0.0 --port 8050 --reload
 ```
 
@@ -140,7 +142,7 @@ REACT_APP_API_URL=http://localhost:8050 npm start
 ### Single Image Processing
 
 ```bash
-# Process single image (from server directory)
+# Process single image with advanced deskew logic (from server directory)
 cd server
 
 # Using Poetry (recommended)
@@ -151,7 +153,7 @@ poetry run process-document input.jpg -o output_dir/
 # Using pip installation
 python -m src.document_processor.cli input.jpg -o output_dir/
 
-# Process with verbose output
+# Process with verbose output (shows detection and deskew details)
 poetry run python -m src.document_processor.cli input.jpg -o output_dir/ --verbose
 ```
 
@@ -235,26 +237,28 @@ curl -X POST "http://localhost:8050/process-batch" \
 
 ## 🎯 Technical Specifications
 
-### Processing Algorithms
+### Advanced Processing Pipeline
 
-- **Crop-First Strategy**: Isolates documents before rotation detection
-- **Multi-method Detection**: 5 boundary detection algorithms
-- **Weighted Angle Averaging**: 3 rotation detection methods with outlier removal
-- **High-quality Interpolation**: Cubic interpolation for rotation
+- **Document Detection**: Multi-step OpenCV pipeline with adaptive thresholding and multiple Canny edge detection approaches
+- **Perspective Correction**: Four-point transformation with automatic corner detection using Douglas-Peucker algorithm
+- **Skew Detection**: jdeskew library for precise angle detection on both full images and cropped documents
+- **Fallback Processing**: Intelligent fallback to full-image deskewing when document boundaries aren't detected
 
-### Performance Benchmarks
+### Background Optimization
 
-- **Simple Documents**: 20-50ms
-- **Complex Documents**: 50-100ms  
-- **Large Images (>2MB)**: 80-150ms
+Based on extensive testing, the system performs optimally with:
+- **Best**: Solid dark backgrounds (black, navy, dark green)
+- **Good**: High-contrast solid colors  
+- **Poor**: Textured surfaces (wood, fabric, concrete)
+- **Worst**: Similar colors to document
 
 ### Libraries Used
 
-- **OpenCV**: Computer vision operations
+- **OpenCV**: Advanced computer vision and document detection
+- **jdeskew**: Specialized library for precise skew angle detection and correction
 - **NumPy**: Array processing and mathematical computations
 - **FastAPI**: Modern Python web framework
 - **React**: Frontend user interface
-- **Framer Motion**: Smooth animations
 - **Docker**: Containerization and deployment
 
 ## 📂 Project Structure
